@@ -1,0 +1,16 @@
+{
+  "name": "Polka Librium",
+  "short_name": "Polka",
+  "start_url": "/polka-librium/",
+  "display": "standalone",
+  "background_color": "#f2fcf5",
+  "theme_color": "#1a7f37",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
