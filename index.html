@@ -12,24 +12,46 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='white'/><text x='50' y='74' font-family='Arial Black, Arial, sans-serif' font-size='80' font-weight='900' text-anchor='middle' fill='%231d1d1f'>P</text><rect x='30' y='84' width='40' height='7' fill='%232ea043'/></svg>">
 <title>Polka Librium — Учет прочитанных книг</title>
 <style>
+/* Базовые переменные */
 :root {
-  --bg: linear-gradient(135deg, #f2fcf5 0%, #f5f5f7 100%);
   --panel: #ffffff; --panel-2: #fafafa;
   --border: #d8d8dd; --text: #1d1d1f; --muted: #6e6e73;
-  --accent: #1a7f37; --accent-hover: #14802c; --danger: #ff3b30;
+  --danger: #ff3b30;
   --gold: #d4a05a; --star: #f0a000;
-  --logo-accent: #2ea043;
   --shadow: 0 4px 14px rgba(0,0,0,0.08);
+  --accent: #1a7f37; --accent-hover: #14802c; /* default green */
+  --bg: linear-gradient(135deg, #f2fcf5 0%, #f5f5f7 100%); /* default bg */
 }
 body.dark {
-  --bg: linear-gradient(135deg, #09170e 0%, #14161a 100%);
   --panel: #1e2126; --panel-2: #23262c;
   --border: #383c44; --text: #eef0f3; --muted: #9aa0a8;
-  --accent: #34c759; --accent-hover: #2fb350; --danger: #ff453a;
+  --danger: #ff453a;
   --gold: #e0b070; --star: #f0a000;
-  --logo-accent: #34c759;
   --shadow: 0 4px 18px rgba(0,0,0,0.4);
+  --accent: #34c759; --accent-hover: #2fb350;
+  --bg: linear-gradient(135deg, #09170e 0%, #14161a 100%);
 }
+
+/* Настраиваемые цвета кнопок (Accent) */
+body[data-accent="green"] { --accent: #1a7f37; --accent-hover: #14802c; }
+body[data-accent="blue"] { --accent: #0071e3; --accent-hover: #0077ed; }
+body[data-accent="pink"] { --accent: #c2185b; --accent-hover: #ad1457; }
+body[data-accent="purple"] { --accent: #6f42c1; --accent-hover: #5a369e; }
+
+body.dark[data-accent="green"] { --accent: #34c759; --accent-hover: #2fb350; }
+body.dark[data-accent="blue"] { --accent: #0a84ff; --accent-hover: #3395ff; }
+body.dark[data-accent="pink"] { --accent: #ff375f; --accent-hover: #ff506e; }
+body.dark[data-accent="purple"] { --accent: #bf5af2; --accent-hover: #c97bf5; }
+
+/* Настраиваемые фоны (Background) */
+body[data-bg="green"] { --bg: linear-gradient(135deg, #f2fcf5 0%, #f5f5f7 100%); }
+body[data-bg="gray"] { --bg: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%); }
+body[data-bg="white"] { --bg: #ffffff; }
+
+body.dark[data-bg="green"] { --bg: linear-gradient(135deg, #09170e 0%, #14161a 100%); }
+body.dark[data-bg="gray"] { --bg: linear-gradient(135deg, #1a1c21 0%, #24272e 100%); }
+body.dark[data-bg="white"] { --bg: #14161a; }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
@@ -41,7 +63,10 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.app-header { width: 100%; max-width: 720px; margin: 0 auto; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 18px 10px; }
+
+/* Обертка для выравнивания контента влево, а статистики вправо */
+.layout-wrapper { display: flex; flex-direction: column; max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 18px; }
+.app-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 16px 0 10px; width: 100%; }
 .logo { display: flex; flex-direction: column; gap: 3px; }
 .logo-main {
   display: flex; align-items: baseline;
@@ -50,14 +75,11 @@ body {
   line-height: 1; color: var(--text); text-transform: uppercase;
 }
 .logo-p { position: relative; display: inline-block; padding-bottom: 7px; margin: 0 1px; }
-.logo-p::after {
-  content: ''; position: absolute; left: 6%; right: 22%;
-  bottom: 0; height: 4px; background: var(--logo-accent); border-radius: 2px;
-}
+.logo-p::after { content: ''; position: absolute; left: 6%; right: 22%; bottom: 0; height: 4px; background: var(--accent); border-radius: 2px; }
 .logo-tagline { font-size: 11px; color: var(--muted); letter-spacing: 0.4px; font-weight: 500; }
 
-/* Блок часов и статистики справа */
-.header-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; max-width: 280px; }
+/* Правая колонка (Часы и Статистика) */
+.header-right { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; max-width: 300px; }
 .clock {
   background: var(--panel); border: 2px solid var(--border);
   border-radius: 10px; padding: 6px 8px 6px 12px;
@@ -72,7 +94,7 @@ body {
   width: 34px; height: 34px; padding: 0; border-radius: 8px;
   border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
   cursor: pointer; font-size: 16px; font-family: inherit;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s;
 }
 .clock-theme:hover { background: var(--panel); border-color: var(--accent); }
 
@@ -85,22 +107,15 @@ body {
 .header-stats .hs-years { color: var(--muted); font-family: 'SF Mono', Consolas, monospace; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
 .header-stats .hs-years span { background: var(--panel-2); padding: 1px 4px; border-radius: 4px; border: 1px solid var(--border); }
 
-@media (max-width: 600px) {
-  .app-header { flex-direction: column; align-items: stretch; }
-  .header-right { max-width: 100%; align-items: stretch; margin-top: 10px; }
-  .clock { align-self: flex-end; }
-  .header-stats { display: block; text-align: left; }
-  .header-stats .hs-years { justify-content: flex-start; }
-  .logo-main { font-size: 22px; }
-}
+/* Основной контент (слева) */
+.app-main { max-width: 800px; width: 100%; margin-right: auto; margin-left: 0; padding-bottom: 110px; }
 
-.app-main { flex: 1; padding: 0 18px 110px; width: 100%; max-width: 720px; margin: 0 auto; }
 .top-tabs { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 16px; background: var(--panel); padding: 6px; border-radius: 12px; border: 2px solid var(--border); overflow-x: auto; }
 .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--muted); font-family: inherit; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .tab-btn.active { background: var(--accent); color: white; }
 .tab-btn:not(.active):hover { color: var(--text); background: var(--panel-2); }
 
-.sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
 .sub-tab-btn { padding: 8px 16px; border: 2px solid var(--border); background: var(--panel-2); color: var(--text); border-radius: 20px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; }
 .sub-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
@@ -147,6 +162,16 @@ body {
 .node-meta .stars { color: var(--star); letter-spacing: 1px; font-size: 14px; }
 .fav-icon { color: var(--star); font-size: 16px; margin-left: auto; }
 
+/* Золотой градиент для избранных книг */
+.node.fav-book {
+  background: linear-gradient(135deg, var(--panel) 0%, rgba(240, 160, 0, 0.12) 100%);
+  border-color: rgba(240, 160, 0, 0.5);
+}
+body.dark .node.fav-book {
+  background: linear-gradient(135deg, var(--panel) 0%, rgba(240, 160, 0, 0.2) 100%);
+  border-color: rgba(240, 160, 0, 0.6);
+}
+
 /* Авторы */
 .author-card { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; margin-bottom: 8px; }
 .author-name { font-weight: 700; font-size: 15px; }
@@ -190,12 +215,12 @@ body {
 
 .field-group { margin-bottom: 16px; }
 .field-group > label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
-input[type="text"], input[type="number"], textarea {
+input[type="text"], input[type="number"], textarea, select {
   font-family: inherit; font-size: 16px; padding: 12px 14px; width: 100%;
   border: 2px solid var(--border); border-radius: 10px; background: var(--panel-2);
   color: var(--text); outline: none; transition: border-color 0.15s;
 }
-input:focus, textarea:focus { border-color: var(--accent); }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
 textarea { resize: vertical; min-height: 80px; }
 
 .rating-container { display: flex; align-items: center; gap: 16px; background: var(--panel-2); padding: 12px; border-radius: 10px; border: 2px solid var(--border); }
@@ -210,6 +235,11 @@ textarea { resize: vertical; min-height: 80px; }
 .cover-controls .row { display: flex; gap: 6px; }
 .cover-controls button { padding: 8px 12px; font-size: 13px; }
 
+/* Цветовые настройки */
+.color-picker { display: flex; gap: 12px; flex-wrap: wrap; }
+.color-swatch { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: 0.2s; box-shadow: inset 0 0 0 2px var(--panel); }
+.color-swatch.active { border-color: var(--text); transform: scale(1.1); }
+
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 13px 22px; border-radius: 12px; border: 2px solid var(--border); background: var(--panel); color: var(--text); font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.1s, background 0.15s, border-color 0.15s; }
 .btn:hover { background: var(--panel-2); border-color: var(--accent); }
 .btn:active { transform: scale(0.97); }
@@ -221,7 +251,7 @@ textarea { resize: vertical; min-height: 80px; }
 .actions-bar { position: fixed; left: 0; right: 0; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; justify-content: center; padding: 0 18px; pointer-events: none; z-index: 40; }
 .actions-bar .btn { pointer-events: auto; box-shadow: var(--shadow); border-radius: 50px; padding: 14px 24px; font-size: 16px; }
 
-.app-footer { text-align: left; padding: 24px 18px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 20px; max-width: 720px; margin-left: auto; margin-right: auto; width: 100%; }
+.app-footer { text-align: left; padding: 24px 0; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 20px; width: 100%; max-width: 800px; }
 .footer-tools { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 .storage-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--border); font-family: 'SF Mono', Consolas, monospace; font-size: 11px; color: var(--muted); margin-top: 10px; }
 
@@ -232,92 +262,105 @@ textarea { resize: vertical; min-height: 80px; }
 
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,.95); color: #fff; padding: 12px 22px; border-radius: 24px; font-size: 14px; z-index: 300; opacity: 0; transition: opacity .3s; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4); text-align: center; max-width: 90%; }
 .toast.show { opacity: 1; }
+
+@media (max-width: 800px) {
+  .app-header { flex-direction: column; align-items: stretch; }
+  .header-right { max-width: 100%; align-items: stretch; margin-top: 10px; }
+  .clock { align-self: flex-end; }
+  .header-stats { display: block; text-align: left; }
+  .header-stats .hs-years { justify-content: flex-start; }
+  .logo-main { font-size: 22px; }
+  .app-main { max-width: 100%; }
+}
 </style>
 </head>
 <body>
 
-<header class="app-header">
-  <div class="logo">
-    <div class="logo-main"><span class="logo-p">P</span><span>OLKA LIBRIUM</span></div>
-    <div class="logo-tagline">Учет прочитанных книг.</div>
-  </div>
-  <div class="header-right">
-    <div class="clock" id="clock">
-      <div class="clock-info">
-        <div class="clock-date">—</div>
-        <div class="clock-time">—</div>
+<div class="layout-wrapper">
+  <header class="app-header">
+    <div class="logo">
+      <div class="logo-main"><span class="logo-p">P</span><span>OLKA LIBRIUM</span></div>
+      <div class="logo-tagline">Учет прочитанных книг.</div>
+    </div>
+    <div class="header-right">
+      <div class="clock" id="clock">
+        <div class="clock-info">
+          <div class="clock-date">—</div>
+          <div class="clock-time">—</div>
+        </div>
+        <button class="clock-theme" id="themeToggle" title="Сменить тему">🌙</button>
+        <button class="clock-theme" onclick="openThemeSettings()" title="Настройки цвета">🎨</button>
       </div>
-      <button class="clock-theme" id="themeToggle" title="Сменить тему">🌙</button>
+      <div class="header-stats" id="headerStats"></div>
     </div>
-    <div class="header-stats" id="headerStats"></div>
-  </div>
-</header>
+  </header>
 
-<main class="app-main" id="appMain">
-  <div class="top-tabs">
-    <button class="tab-btn active" id="tabList" onclick="switchView('list')">📚 Книги</button>
-    <button class="tab-btn" id="tabFav" onclick="switchView('favorites')">⭐ Избранное</button>
-    <button class="tab-btn" id="tabAnalytics" onclick="switchView('analytics')">📊 Аналитика</button>
-  </div>
+  <main class="app-main" id="appMain">
+    <div class="top-tabs">
+      <button class="tab-btn active" id="tabList" onclick="switchView('list')">📚 Книги</button>
+      <button class="tab-btn" id="tabFav" onclick="switchView('favorites')">⭐ Избранное</button>
+      <button class="tab-btn" id="tabAnalytics" onclick="switchView('analytics')">📊 Аналитика</button>
+    </div>
 
-  <!-- ВКЛАДКА КНИГИ -->
-  <div id="viewList">
-    <div class="search-bar">
-      <input type="search" id="searchInput" placeholder="Поиск по названию или автору...">
-    </div>
-    <div class="filters">
-      <select id="filterRating">
-        <option value="all">Все оценки</option>
-        <option value="5">5 ★</option>
-        <option value="4">4+ ★</option>
-        <option value="3">3+ ★</option>
-        <option value="unrated">Без оценки</option>
-      </select>
-      <select id="sortOrder">
-        <option value="date-desc">Сначала новые</option>
-        <option value="date-asc">Сначала старые</option>
-        <option value="rating-desc">Оценка ↓</option>
-        <option value="rating-asc">Оценка ↑</option>
-        <option value="title-asc">По названию</option>
-      </select>
-    </div>
-    <span class="count-label" id="countLabel"></span>
-    <div id="booksList"></div>
-  </div>
-
-  <!-- ВКЛАДКА ИЗБРАННОЕ -->
-  <div id="viewFavorites" style="display:none">
-    <div class="sub-tabs">
-      <button class="sub-tab-btn active" id="subTabBooks" onclick="switchFavTab('books')">📖 Любимые книги</button>
-      <button class="sub-tab-btn" id="subTabAuthors" onclick="switchFavTab('authors')">✍️ Любимые авторы</button>
-    </div>
-    <div id="favBooksList" class="node-list"></div>
-    <div id="favAuthorsList" style="display:none"></div>
-  </div>
-
-  <!-- ВКЛАДКА АНАЛИТИКА -->
-  <div id="viewAnalytics" class="analytics-view" style="display:none">
-    <div class="chart-block">
-      <h3>📚 Книг прочитано по годам</h3>
-      <div class="bar-chart" id="chartYears"></div>
-    </div>
-    
-    <div class="chart-block">
-      <div class="chart-header">
-        <h3>📅 Динамика по месяцам</h3>
-        <select id="analyticsYearSelect" class="year-select"></select>
+    <!-- ВКЛАДКА КНИГИ -->
+    <div id="viewList">
+      <div class="search-bar">
+        <input type="search" id="searchInput" placeholder="Поиск по названию или автору...">
       </div>
-      <div class="bar-chart" id="chartMonths"></div>
-      <p style="font-size:12px; color:var(--muted); text-align:center; margin-top:10px;">Нажмите на столбик, чтобы увидеть список книг</p>
+      <div class="filters">
+        <select id="filterRating">
+          <option value="all">Все оценки</option>
+          <option value="5">5 ★</option>
+          <option value="4">4+ ★</option>
+          <option value="3">3+ ★</option>
+          <option value="unrated">Без оценки</option>
+        </select>
+        <select id="sortOrder">
+          <option value="date-desc">Сначала новые</option>
+          <option value="date-asc">Сначала старые</option>
+          <option value="rating-desc">Оценка ↓</option>
+          <option value="rating-asc">Оценка ↑</option>
+          <option value="title-asc">По названию</option>
+        </select>
+      </div>
+      <span class="count-label" id="countLabel"></span>
+      <div id="booksList"></div>
     </div>
-  </div>
-</main>
 
-<footer class="app-footer">
-  <div class="footer-tools" id="footerTools"></div>
-  <div class="storage-badge" id="storageBadge">💾 Хранилище: —</div>
-  <div style="margin-top: 12px;">Сделано Андреевым Александром</div>
-</footer>
+    <!-- ВКЛАДКА ИЗБРАННОЕ -->
+    <div id="viewFavorites" style="display:none">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" id="subTabBooks" onclick="switchFavTab('books')">📖 Любимые книги</button>
+        <button class="sub-tab-btn" id="subTabAuthors" onclick="switchFavTab('authors')">✍️ Любимые авторы</button>
+      </div>
+      <div id="favBooksList" class="node-list"></div>
+      <div id="favAuthorsList" style="display:none"></div>
+    </div>
+
+    <!-- ВКЛАДКА АНАЛИТИКА -->
+    <div id="viewAnalytics" class="analytics-view" style="display:none">
+      <div class="chart-block">
+        <h3>📚 Книг прочитано по годам</h3>
+        <div class="bar-chart" id="chartYears"></div>
+      </div>
+      
+      <div class="chart-block">
+        <div class="chart-header">
+          <h3>📅 Динамика по месяцам</h3>
+          <select id="analyticsYearSelect" class="year-select"></select>
+        </div>
+        <div class="bar-chart" id="chartMonths"></div>
+        <p style="font-size:12px; color:var(--muted); text-align:center; margin-top:10px;">Нажмите на столбик, чтобы увидеть список книг</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-tools" id="footerTools"></div>
+    <div class="storage-badge" id="storageBadge">💾 Хранилище: —</div>
+    <div style="margin-top: 12px;">Сделано Андреевым Александром</div>
+  </footer>
+</div>
 
 <div class="actions-bar" id="actionsBar">
   <button class="btn primary" id="addBookBtn">+ Добавить книгу</button>
@@ -421,9 +464,11 @@ textarea { resize: vertical; min-height: 80px; }
 const STORAGE_KEY = 'polka_librium_books_v1';
 const THEME_KEY = 'polka_librium_theme';
 const FAV_AUTHORS_KEY = 'polka_librium_fav_authors';
+const THEME_SETTINGS_KEY = 'polka_theme_settings';
 
 let books = [];
 let favAuthors = [];
+let themeSettings = { accent: 'green', bg: 'green' };
 let editingBookId = null;
 let tempRating = 0;
 let tempCover = '';
@@ -448,6 +493,10 @@ function load() {
     if (rawFav) favAuthors = JSON.parse(rawFav);
     if (!Array.isArray(favAuthors)) favAuthors = [];
   } catch(e) { favAuthors = []; }
+  try {
+    const rawSettings = localStorage.getItem(THEME_SETTINGS_KEY);
+    if (rawSettings) themeSettings = JSON.parse(rawSettings);
+  } catch(e) {}
 }
 
 function updateStorageBadge() {
@@ -465,10 +514,69 @@ function applyTheme(theme) {
   else document.body.classList.remove('dark');
   document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
 }
+
+function applyThemeSettings() {
+  document.body.setAttribute('data-accent', themeSettings.accent);
+  document.body.setAttribute('data-bg', themeSettings.bg);
+}
+
 document.getElementById('themeToggle').onclick = () => {
   const next = document.body.classList.contains('dark') ? 'light' : 'dark';
   localStorage.setItem(THEME_KEY, next);
   applyTheme(next);
+};
+
+// --- НАСТРОЙКИ ЦВЕТА ---
+window.openThemeSettings = function() {
+  const acc = themeSettings.accent;
+  const bg = themeSettings.bg;
+  
+  const html = `
+    <div class="modal-overlay open" id="themeSettingsModal" onclick="if(event.target===this) this.remove()">
+      <div class="modal">
+        <div class="modal-header"><span>🎨 Настройки внешнего вида</span><button onclick="document.getElementById('themeSettingsModal').remove()">✕</button></div>
+        <div class="modal-body">
+          <div class="field-group">
+            <label>Цвет кнопок и акцентов</label>
+            <div class="color-picker">
+              <button class="color-swatch ${acc==='green'?'active':''}" style="background:#1a7f37" onclick="setThemeAccent('green')"></button>
+              <button class="color-swatch ${acc==='blue'?'active':''}" style="background:#0071e3" onclick="setThemeAccent('blue')"></button>
+              <button class="color-swatch ${acc==='pink'?'active':''}" style="background:#c2185b" onclick="setThemeAccent('pink')"></button>
+              <button class="color-swatch ${acc==='purple'?'active':''}" style="background:#6f42c1" onclick="setThemeAccent('purple')"></button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Фон приложения</label>
+            <div class="color-picker">
+              <button class="color-swatch ${bg==='green'?'active':''}" style="background:linear-gradient(135deg,#f2fcf5,#f5f5f7)" onclick="setThemeBg('green')"></button>
+              <button class="color-swatch ${bg==='gray'?'active':''}" style="background:linear-gradient(135deg,#e9ecef,#f8f9fa)" onclick="setThemeBg('gray')"></button>
+              <button class="color-swatch ${bg==='white'?'active':''}" style="background:#ffffff" onclick="setThemeBg('white')"></button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn primary" onclick="document.getElementById('themeSettingsModal').remove()">Готово</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', html);
+};
+
+window.setThemeAccent = function(color) {
+  themeSettings.accent = color;
+  localStorage.setItem(THEME_SETTINGS_KEY, JSON.stringify(themeSettings));
+  applyThemeSettings();
+  document.getElementById('themeSettingsModal').remove();
+  openThemeSettings(); // Переоткрываем, чтобы обновить галочки
+};
+
+window.setThemeBg = function(color) {
+  themeSettings.bg = color;
+  localStorage.setItem(THEME_SETTINGS_KEY, JSON.stringify(themeSettings));
+  applyThemeSettings();
+  document.getElementById('themeSettingsModal').remove();
+  openThemeSettings();
 };
 
 function updateClock() {
@@ -517,7 +625,6 @@ function parseDateInfo(str) {
     if (s.includes(k)) { m = MONTHS[k]; break; } 
   }
   
-  // Ищем 4 цифры подряд (годы от 1900 до 2099)
   const ym = s.match(/\b(19|20)\d{2}\b/);
   if (ym) y = parseInt(ym[0], 10);
   
@@ -602,9 +709,10 @@ function renderList() {
 
     const favIcon = b.favorite ? `<span class="fav-icon">★</span>` : '';
     const coverHtml = b.cover ? `<img src="${escapeHtml(b.cover)}" class="node-cover" onerror="this.style.display='none'">` : '';
+    const nodeClass = b.favorite ? 'node fav-book' : 'node';
     
     html += `
-      <div class="node" onclick="openBookModal('${b.id}')">
+      <div class="${nodeClass}" onclick="openBookModal('${b.id}')">
         <div class="node-index">${index++}.</div>
         ${coverHtml}
         <div class="node-body">
@@ -652,7 +760,7 @@ function renderFavBooks() {
   favs.forEach(b => {
     const coverHtml = b.cover ? `<img src="${escapeHtml(b.cover)}" class="node-cover" onerror="this.style.display='none'">` : '';
     html += `
-      <div class="node" onclick="openBookModal('${b.id}')">
+      <div class="node fav-book" onclick="openBookModal('${b.id}')">
         <div class="node-index">${index++}.</div>
         ${coverHtml}
         <div class="node-body">
@@ -671,26 +779,61 @@ function renderFavBooks() {
 
 function renderFavAuthors() {
   const container = document.getElementById('favAuthorsList');
+  // Показываем только тех авторов, которые есть в базе и отмечены звездой
+  const validFavs = favAuthors.filter(author => books.some(b => (b.author||'').includes(author)));
   
-  const allAuthors = [...new Set(books.map(b => (b.author||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-  
-  if (allAuthors.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="big-icon">✍️</div><h3>Нет авторов</h3><p>Добавьте книги с авторами.</p></div>';
+  let html = '<div style="margin-bottom:12px;"><button class="btn primary" style="width:100%;" onclick="openAuthorSelect()">➕ Добавить автора в избранное</button></div>';
+
+  if (validFavs.length === 0) {
+    html += '<div class="empty-state"><div class="big-icon">✍️</div><h3>Нет избранных авторов</h3><p>Нажмите кнопку выше, чтобы добавить.</p></div>';
+    container.innerHTML = html;
     return;
   }
 
-  let html = '';
-  allAuthors.forEach(author => {
-    const isFav = favAuthors.includes(author);
+  validFavs.forEach(author => {
     html += `
       <div class="author-card">
         <div class="author-name">${escapeHtml(author)}</div>
-        <button class="author-fav-btn ${isFav ? 'on' : ''}" onclick="toggleFavAuthor('${escapeHtml(author).replace(/'/g, "\\'")}')">★</button>
+        <button class="author-fav-btn on" onclick="toggleFavAuthor('${escapeHtml(author).replace(/'/g, "\\'")}')">★</button>
       </div>
     `;
   });
   container.innerHTML = html;
 }
+
+window.openAuthorSelect = function() {
+  const allAuthors = [...new Set(books.map(b => (b.author||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const available = allAuthors.filter(a => !favAuthors.includes(a));
+  
+  if (available.length === 0) { toast('Все авторы из базы уже в избранном'); return; }
+  
+  const selectHtml = available.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+  const modalHtml = `
+    <div class="modal-overlay open" id="authorSelectModal" onclick="if(event.target===this) this.remove()">
+      <div class="modal" style="max-width:400px;">
+        <div class="modal-header"><span>Выбрать автора</span><button onclick="document.getElementById('authorSelectModal').remove()">✕</button></div>
+        <div class="modal-body">
+          <select id="authorSelectInput">
+            ${selectHtml}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="document.getElementById('authorSelectModal').remove()">Отмена</button>
+          <button class="btn primary" onclick="addSelectedAuthor()">Добавить</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
+window.addSelectedAuthor = function() {
+  const select = document.getElementById('authorSelectInput');
+  if (select && select.value) {
+    toggleFavAuthor(select.value);
+    document.getElementById('authorSelectModal').remove();
+  }
+};
 
 window.toggleFavAuthor = function(author) {
   if (favAuthors.includes(author)) {
@@ -794,8 +937,9 @@ window.showMonthBooks = function(year, month) {
   let html = '<div class="node-list">';
   targetBooks.forEach((b, i) => {
     const coverHtml = b.cover ? `<img src="${escapeHtml(b.cover)}" class="node-cover" onerror="this.style.display='none'">` : '';
+    const nodeClass = b.favorite ? 'node fav-book' : 'node';
     html += `
-      <div class="node" onclick="closeModal('monthBooksModal'); openBookModal('${b.id}');">
+      <div class="${nodeClass}" onclick="closeModal('monthBooksModal'); openBookModal('${b.id}');">
         <div class="node-index">${i+1}.</div>
         ${coverHtml}
         <div class="node-body">
@@ -825,8 +969,9 @@ window.showYearBooks = function(year) {
   let html = '<div class="node-list">';
   targetBooks.forEach((b, i) => {
     const coverHtml = b.cover ? `<img src="${escapeHtml(b.cover)}" class="node-cover" onerror="this.style.display='none'">` : '';
+    const nodeClass = b.favorite ? 'node fav-book' : 'node';
     html += `
-      <div class="node" onclick="closeModal('monthBooksModal'); openBookModal('${b.id}');">
+      <div class="${nodeClass}" onclick="closeModal('monthBooksModal'); openBookModal('${b.id}');">
         <div class="node-index">${i+1}.</div>
         ${coverHtml}
         <div class="node-body">
@@ -1092,7 +1237,6 @@ document.getElementById('fileInput').onchange = (e) => {
           });
         }
         
-        // Проверка годов в новом файле
         const yearsInFile = newBooks.map(b => parseDateInfo(b.readDate).year).filter(y => y > 0);
         const minY = yearsInFile.length ? Math.min(...yearsInFile) : 0;
         const maxY = yearsInFile.length ? Math.max(...yearsInFile) : 0;
@@ -1115,8 +1259,10 @@ document.getElementById('fileInput').onchange = (e) => {
   reader.readAsText(file, 'UTF-8');
 };
 
+// Инициализация
 load();
 applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+applyThemeSettings();
 updateClock();
 updateHeaderStats();
 renderList();
