@@ -108,10 +108,12 @@ body {
 .count-label { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 10px; display: block; }
 
 /* Заголовки групп */
-.year-header { font-size: 28px; font-weight: 900; color: var(--text); margin: 24px 0 10px; padding-bottom: 8px; border-bottom: 3px solid var(--accent); position: sticky; top: 0; background: var(--bg); z-index: 20; letter-spacing: 1px; }
+.year-header { font-size: 26px; font-weight: 900; color: var(--text); margin: 24px 0 10px; padding-bottom: 8px; border-bottom: 3px solid var(--accent); position: sticky; top: 0; background: var(--bg); z-index: 20; letter-spacing: 1px; display: flex; align-items: baseline; gap: 10px; }
+.year-header span { font-size: 14px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
 .year-header:first-child { margin-top: 0; }
 .month-header { font-size: 16px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; text-transform: capitalize; display: flex; align-items: center; gap: 10px; }
 .month-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.month-header span { font-size: 12px; color: var(--muted); font-weight: 600; }
 
 /* Стили карточек книг */
 .node-list { display: flex; flex-direction: column; gap: 6px; }
@@ -134,7 +136,9 @@ body {
 /* Аналитика */
 .analytics-view { display: flex; flex-direction: column; gap: 20px; }
 .chart-block { background: var(--panel); border: 2px solid var(--border); border-radius: 12px; padding: 18px; }
-.chart-block h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.chart-block h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
+.year-select { padding: 8px 12px; border-radius: 8px; border: 2px solid var(--border); background: var(--panel-2); color: var(--text); font-family: inherit; font-size: 14px; font-weight: 600; outline: none; cursor: pointer; }
 .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 150px; padding-bottom: 24px; position: relative; border-bottom: 2px solid var(--border); }
 .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; }
 .bar { width: 100%; max-width: 40px; background: var(--accent); border-radius: 6px 6px 0 0; transition: height 0.4s ease; min-height: 4px; position: relative; }
@@ -174,7 +178,6 @@ input[type="text"], input[type="number"], textarea {
 input:focus, textarea:focus { border-color: var(--accent); }
 textarea { resize: vertical; min-height: 80px; }
 
-/* Ползунок рейтинга */
 .rating-container { display: flex; align-items: center; gap: 16px; background: var(--panel-2); padding: 12px; border-radius: 10px; border: 2px solid var(--border); }
 .rating-container input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; height: 8px; }
 .rating-display { font-size: 20px; font-weight: 800; color: var(--star); min-width: 50px; text-align: right; font-family: 'SF Mono', Consolas, monospace; }
@@ -201,10 +204,6 @@ textarea { resize: vertical; min-height: 80px; }
 
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,.95); color: #fff; padding: 12px 22px; border-radius: 24px; font-size: 14px; z-index: 300; opacity: 0; transition: opacity .3s; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
 .toast.show { opacity: 1; }
-
-.guide h2 { font-size: 20px; margin: 0 0 6px; }
-.guide p, .guide li { font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
-.guide .callout { background: rgba(46,160,67,0.1); border-left: 3px solid var(--accent); padding: 10px 14px; margin: 12px 0; border-radius: 6px; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -250,7 +249,7 @@ textarea { resize: vertical; min-height: 80px; }
         <option value="rating-asc">Оценка ↑</option>
         <option value="title-asc">По названию</option>
       </select>
-      <label><input type="checkbox" id="filterFav"> ⭐ Только избранное</label>
+      <label><input type="checkbox" id="filterFav"> ⭐ Избранное</label>
     </div>
 
     <span class="count-label" id="countLabel"></span>
@@ -262,8 +261,12 @@ textarea { resize: vertical; min-height: 80px; }
       <h3>📚 Книг прочитано по годам</h3>
       <div class="bar-chart" id="chartYears"></div>
     </div>
+    
     <div class="chart-block">
-      <h3>📅 Динамика по месяцам (за текущий год)</h3>
+      <div class="chart-header">
+        <h3>📅 Динамика по месяцам</h3>
+        <select id="analyticsYearSelect" class="year-select"></select>
+      </div>
       <div class="bar-chart" id="chartMonths"></div>
     </div>
   </div>
@@ -341,30 +344,6 @@ textarea { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
-<!-- Модальное окно "О приложении" -->
-<div class="modal-overlay" id="aboutModal">
-  <div class="modal">
-    <div class="modal-header">
-      <span>ℹ️ О Polka Librium</span>
-      <button data-close="aboutModal">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="guide">
-        <h2>Добро пожаловать в Polka Librium</h2>
-        <p>Легкий учет прочитанных книг без рекламы.</p>
-        <p>Приложение поддерживает половинки звезд, избранное, а также автоматическую группировку по годам и месяцам для удобной навигации.</p>
-        <div class="callout">
-          💾 <b>Сохранность данных:</b> Все данные хранятся только в вашем браузере. Регулярно делайте «Экспорт» (кнопка внизу), чтобы не потерять библиотеку при очистке кэша.
-        </div>
-        <p><b>Сделано Андреевым Александром, 2026 г.</b></p>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn primary" data-close="aboutModal">Понятно</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 <input type="file" id="fileInput" accept=".csv,.json" style="display:none">
 
@@ -390,7 +369,6 @@ function load() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) books = JSON.parse(raw);
     if (!Array.isArray(books)) books = [];
-    // Нормализация старых данных (добавляем favorite если нет)
     books.forEach(b => { if (b.favorite === undefined) b.favorite = false; });
   } catch(e) { books = []; }
 }
@@ -483,8 +461,21 @@ function renderList() {
   let currentMonth = null;
   let index = 1;
 
-  // Группировка (только если сортировка по дате)
   const isDateSort = sort.includes('date');
+
+  // Считаем количество книг по годам и месяцам для заголовков
+  const yearCounts = {};
+  const monthCounts = {};
+  filtered.forEach(b => {
+    const d = parseDateInfo(b.readDate);
+    if (d.year) {
+      yearCounts[d.year] = (yearCounts[d.year] || 0) + 1;
+      if (d.month) {
+        const key = `${d.year}-${d.month}`;
+        monthCounts[key] = (monthCounts[key] || 0) + 1;
+      }
+    }
+  });
 
   filtered.forEach(b => {
     const d = parseDateInfo(b.readDate);
@@ -492,12 +483,13 @@ function renderList() {
     if (isDateSort && d.year) {
       if (d.year !== currentYear) {
         currentYear = d.year;
-        currentMonth = null; // сброс месяца при смене года
-        html += `<div class="year-header">${d.year}</div>`;
+        currentMonth = null; 
+        html += `<div class="year-header">${d.year} <span>(${yearCounts[d.year]} книг)</span></div>`;
       }
       if (d.month && d.month !== currentMonth) {
         currentMonth = d.month;
-        html += `<div class="month-header">${MONTH_NAMES[d.month]}</div>`;
+        const mCount = monthCounts[`${d.year}-${d.month}`];
+        html += `<div class="month-header">${MONTH_NAMES[d.month]} <span>${mCount} шт.</span></div>`;
       }
     }
 
@@ -528,7 +520,7 @@ document.getElementById('sortOrder').addEventListener('change', renderList);
 
 // --- АНАЛИТИКА ---
 function renderAnalytics() {
-  // График по годам
+  // 1. График по годам
   const yearCounts = {};
   books.forEach(b => {
     const d = parseDateInfo(b.readDate);
@@ -554,10 +546,34 @@ function renderAnalytics() {
     }).join('');
   }
 
-  // График по месяцам (берем последний год из данных или текущий)
-  const currentYear = new Date().getFullYear();
-  const targetYear = years.includes(currentYear) ? currentYear : (years[years.length - 1] || currentYear);
+  // 2. Заполняем выпадающий список годов (сортируем по убыванию)
+  const select = document.getElementById('analyticsYearSelect');
+  const currentSelected = select.value;
   
+  select.innerHTML = years.sort((a,b)=>b-a).map(y => `<option value="${y}">${y} год</option>`).join('');
+  
+  // Восстанавливаем выбор или ставим текущий/последний
+  const currentYear = new Date().getFullYear();
+  if (years.includes(parseInt(currentSelected))) {
+    select.value = currentSelected;
+  } else if (years.includes(currentYear)) {
+    select.value = currentYear;
+  } else if (years.length > 0) {
+    select.value = years[years.length - 1];
+  }
+
+  renderMonthChart();
+}
+
+function renderMonthChart() {
+  const select = document.getElementById('analyticsYearSelect');
+  const targetYear = parseInt(select.value);
+  
+  if (!targetYear) {
+    document.getElementById('chartMonths').innerHTML = '';
+    return;
+  }
+
   const monthCounts = Array(12).fill(0);
   books.forEach(b => {
     const d = parseDateInfo(b.readDate);
@@ -568,7 +584,6 @@ function renderAnalytics() {
 
   const maxMonthCount = Math.max(...monthCounts, 1);
   const chartMonths = document.getElementById('chartMonths');
-  chartMonths.previousElementSibling.textContent = `📅 Динамика по месяцам (${targetYear} год)`;
   
   chartMonths.innerHTML = monthCounts.map((count, i) => {
     const h = (count / maxMonthCount) * 100;
@@ -581,6 +596,8 @@ function renderAnalytics() {
     `;
   }).join('');
 }
+
+document.getElementById('analyticsYearSelect').addEventListener('change', renderMonthChart);
 
 // Переключение вкладок
 window.switchView = function(view) {
@@ -602,7 +619,6 @@ function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('[data-close]').forEach(btn => btn.onclick = () => closeModal(btn.dataset.close));
 
-// Ползунок оценки
 const ratingRange = document.getElementById('ratingRange');
 const ratingDisplay = document.getElementById('ratingDisplay');
 ratingRange.addEventListener('input', (e) => {
@@ -724,7 +740,6 @@ document.getElementById('fileInput').onchange = (e) => {
         if (Array.isArray(data)) { books = data.map(b => ({...b, id: uid(), favorite: !!b.favorite})); save(); renderList(); toast('JSON загружен'); }
       } catch(err) { toast('Ошибка JSON'); }
     } else {
-      // CSV парсер с поддержкой кавычек
       const firstLine = text.split('\n')[0];
       const delim = (firstLine.match(/;/g)||[]).length > (firstLine.match(/,/g)||[]).length ? ';' : ',';
       const rows = []; let row = [], cur = '', inQ = false;
