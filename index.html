@@ -41,8 +41,7 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.app-header, .app-main { width: 100%; max-width: 720px; margin-left: 0; margin-right: auto; }
-.app-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 18px 10px; }
+.app-header { width: 100%; max-width: 720px; margin: 0 auto; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 18px 10px; }
 .logo { display: flex; flex-direction: column; gap: 3px; }
 .logo-main {
   display: flex; align-items: baseline;
@@ -57,8 +56,8 @@ body {
 }
 .logo-tagline { font-size: 11px; color: var(--muted); letter-spacing: 0.4px; font-weight: 500; }
 
-/* Блок часов и статистики */
-.header-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+/* Блок часов и статистики справа */
+.header-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; max-width: 280px; }
 .clock {
   background: var(--panel); border: 2px solid var(--border);
   border-radius: 10px; padding: 6px 8px 6px 12px;
@@ -77,21 +76,25 @@ body {
 }
 .clock-theme:hover { background: var(--panel); border-color: var(--accent); }
 
-.header-stats { background: var(--panel); border: 2px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 12px; box-shadow: var(--shadow); text-align: right; max-width: 250px; }
+.header-stats {
+  background: var(--panel); border: 2px solid var(--border); border-radius: 10px;
+  padding: 8px 12px; font-size: 12px; box-shadow: var(--shadow);
+  width: 100%; text-align: right;
+}
 .header-stats .hs-total { font-weight: 700; margin-bottom: 4px; color: var(--accent); font-size: 13px; }
 .header-stats .hs-years { color: var(--muted); font-family: 'SF Mono', Consolas, monospace; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
 .header-stats .hs-years span { background: var(--panel-2); padding: 1px 4px; border-radius: 4px; border: 1px solid var(--border); }
 
 @media (max-width: 600px) {
+  .app-header { flex-direction: column; align-items: stretch; }
+  .header-right { max-width: 100%; align-items: stretch; margin-top: 10px; }
+  .clock { align-self: flex-end; }
+  .header-stats { display: block; text-align: left; }
+  .header-stats .hs-years { justify-content: flex-start; }
   .logo-main { font-size: 22px; }
-  .clock { padding: 4px 6px 4px 8px; gap: 6px; }
-  .clock .clock-date { font-size: 10px; }
-  .clock .clock-time { font-size: 13px; }
-  .clock-theme { width: 30px; height: 30px; font-size: 14px; }
-  .header-stats { display: none; } /* Скрываем на маленьких экранах, чтобы не мешало */
 }
 
-.app-main { flex: 1; padding: 0 18px 110px; }
+.app-main { flex: 1; padding: 0 18px 110px; width: 100%; max-width: 720px; margin: 0 auto; }
 .top-tabs { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 16px; background: var(--panel); padding: 6px; border-radius: 12px; border: 2px solid var(--border); overflow-x: auto; }
 .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--muted); font-family: inherit; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .tab-btn.active { background: var(--accent); color: white; }
@@ -115,8 +118,6 @@ body {
   background: var(--panel); color: var(--text); font-family: inherit; font-size: 14px;
   outline: none; cursor: pointer;
 }
-.filters label { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; background: var(--panel); padding: 8px 12px; border-radius: 10px; border: 2px solid var(--border); }
-.filters label input { width: 16px; height: 16px; accent-color: var(--accent); }
 .count-label { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 10px; display: block; }
 
 /* Заголовки групп */
@@ -220,7 +221,7 @@ textarea { resize: vertical; min-height: 80px; }
 .actions-bar { position: fixed; left: 0; right: 0; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; justify-content: center; padding: 0 18px; pointer-events: none; z-index: 40; }
 .actions-bar .btn { pointer-events: auto; box-shadow: var(--shadow); border-radius: 50px; padding: 14px 24px; font-size: 16px; }
 
-.app-footer { text-align: left; padding: 24px 18px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 20px; max-width: 720px; }
+.app-footer { text-align: left; padding: 24px 18px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 20px; max-width: 720px; margin-left: auto; margin-right: auto; width: 100%; }
 .footer-tools { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 .storage-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--border); font-family: 'SF Mono', Consolas, monospace; font-size: 11px; color: var(--muted); margin-top: 10px; }
 
@@ -229,7 +230,7 @@ textarea { resize: vertical; min-height: 80px; }
 .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
 .empty-state p { font-size: 14px; }
 
-.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,.95); color: #fff; padding: 12px 22px; border-radius: 24px; font-size: 14px; z-index: 300; opacity: 0; transition: opacity .3s; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,.95); color: #fff; padding: 12px 22px; border-radius: 24px; font-size: 14px; z-index: 300; opacity: 0; transition: opacity .3s; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4); text-align: center; max-width: 90%; }
 .toast.show { opacity: 1; }
 </style>
 </head>
@@ -340,7 +341,7 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
       <div class="field-group">
         <label>Дата прочтения</label>
-        <input type="text" id="bookDateInput" placeholder="Ноябрь 2026 г.">
+        <input type="text" id="bookDateInput" placeholder="Ноябрь 2026 г. или 2008">
       </div>
       
       <div class="field-group">
@@ -422,7 +423,7 @@ const THEME_KEY = 'polka_librium_theme';
 const FAV_AUTHORS_KEY = 'polka_librium_fav_authors';
 
 let books = [];
-let favAuthors = []; // массив строк с именами авторов
+let favAuthors = [];
 let editingBookId = null;
 let tempRating = 0;
 let tempCover = '';
@@ -433,7 +434,7 @@ function uid() { return Date.now().toString(36) + Math.random().toString(36).sli
 function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(books)); updateStorageBadge(); } catch(e) { alert('Хранилище заполнено. Удалите лишние фото.'); } }
 function saveFavAuthors() { try { localStorage.setItem(FAV_AUTHORS_KEY, JSON.stringify(favAuthors)); } catch(e) {} }
-function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
 
 function load() {
   try {
@@ -488,7 +489,7 @@ function updateHeaderStats() {
     if (d.year) yearCounts[d.year] = (yearCounts[d.year] || 0) + 1;
   });
   
-  const years = Object.keys(yearCounts).map(Number).sort((a,b)=>b-a); // по убыванию
+  const years = Object.keys(yearCounts).map(Number).sort((a,b)=>b-a); 
   
   if (books.length === 0) {
     el.innerHTML = '';
@@ -509,13 +510,18 @@ const MONTH_NAMES = {1:'Январь', 2:'Февраль', 3:'Март', 4:'Ап
 
 function parseDateInfo(str) {
   if (!str) return { year: 0, month: 0, sortVal: 0 };
-  const s = str.toLowerCase();
+  const s = String(str).toLowerCase().trim();
   let m = 0, y = 0;
-  for (const k in MONTHS) { if (s.includes(k)) { m = MONTHS[k]; break; } }
-  const ym = s.match(/(\d{4})/); if (ym) y = parseInt(ym[1], 10);
   
-  // Если год есть, а месяца нет, ставим середину года для сортировки
-  let sortMonth = m || 6; 
+  for (const k in MONTHS) { 
+    if (s.includes(k)) { m = MONTHS[k]; break; } 
+  }
+  
+  // Ищем 4 цифры подряд (годы от 1900 до 2099)
+  const ym = s.match(/\b(19|20)\d{2}\b/);
+  if (ym) y = parseInt(ym[0], 10);
+  
+  let sortMonth = m || 6;
   return { year: y, month: m, sortVal: y * 10000 + sortMonth * 100 + 15 };
 }
 
@@ -666,7 +672,6 @@ function renderFavBooks() {
 function renderFavAuthors() {
   const container = document.getElementById('favAuthorsList');
   
-  // Извлекаем всех уникальных авторов из базы
   const allAuthors = [...new Set(books.map(b => (b.author||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   
   if (allAuthors.length === 0) {
@@ -775,7 +780,6 @@ function renderMonthChart() {
 
 document.getElementById('analyticsYearSelect').addEventListener('change', renderMonthChart);
 
-// Показ книг за месяц
 window.showMonthBooks = function(year, month) {
   const targetBooks = books.filter(b => {
     const d = parseDateInfo(b.readDate);
@@ -807,7 +811,6 @@ window.showMonthBooks = function(year, month) {
   openModal('monthBooksModal');
 };
 
-// Показ книг за год (если нажать на столбик года)
 window.showYearBooks = function(year) {
   const targetBooks = books.filter(b => {
     const d = parseDateInfo(b.readDate);
@@ -839,7 +842,6 @@ window.showYearBooks = function(year) {
   openModal('monthBooksModal');
 };
 
-// Переключение вкладок
 window.switchView = function(view) {
   currentView = view;
   document.getElementById('tabList').classList.toggle('active', view === 'list');
@@ -869,7 +871,6 @@ ratingRange.addEventListener('input', (e) => {
   ratingDisplay.textContent = tempRating > 0 ? tempRating + ' ★' : '0 ★';
 });
 
-// Загрузка обложки
 document.getElementById('coverUploadBtn').onclick = () => document.getElementById('coverFileInput').click();
 document.getElementById('coverFileInput').onchange = (e) => {
   const file = e.target.files[0];
@@ -879,7 +880,7 @@ document.getElementById('coverFileInput').onchange = (e) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      const scale = 200 / img.width; // сжимаем до 200px по ширине
+      const scale = 200 / img.width; 
       canvas.width = 200;
       canvas.height = img.height * scale;
       const ctx = canvas.getContext('2d');
@@ -1036,7 +1037,7 @@ document.getElementById('fileInput').onchange = (e) => {
         const data = JSON.parse(text);
         if (Array.isArray(data)) { 
             books = data.map(b => ({...b, id: uid(), favorite: !!b.favorite, cover: b.cover || ''})); 
-            save(); renderList(); updateHeaderStats(); toast('JSON загружен'); 
+            save(); renderList(); updateHeaderStats(); toast(`JSON загружен (${books.length} кн.)`); 
         }
       } catch(err) { toast('Ошибка JSON'); }
     } else {
@@ -1091,8 +1092,14 @@ document.getElementById('fileInput').onchange = (e) => {
           });
         }
         
+        // Проверка годов в новом файле
+        const yearsInFile = newBooks.map(b => parseDateInfo(b.readDate).year).filter(y => y > 0);
+        const minY = yearsInFile.length ? Math.min(...yearsInFile) : 0;
+        const maxY = yearsInFile.length ? Math.max(...yearsInFile) : 0;
+        const yearsMsg = minY ? ` (годы: ${minY}-${maxY})` : '';
+
         if (books.length > 0) {
-          if (confirm(`Найдено ${newBooks.length} книг. Добавить к текущим? (Отмена = Заменить всё)`)) {
+          if (confirm(`Найдено ${newBooks.length} книг${yearsMsg}. Добавить к текущим? (Отмена = Заменить всё)`)) {
             books = books.concat(newBooks);
           } else {
             books = newBooks;
@@ -1100,7 +1107,7 @@ document.getElementById('fileInput').onchange = (e) => {
         } else {
           books = newBooks;
         }
-        save(); renderList(); updateHeaderStats(); toast(`Загружено ${newBooks.length} книг`);
+        save(); renderList(); updateHeaderStats(); toast(`Загружено ${newBooks.length} книг${yearsMsg}`);
       }
     }
     e.target.value = '';
@@ -1108,7 +1115,6 @@ document.getElementById('fileInput').onchange = (e) => {
   reader.readAsText(file, 'UTF-8');
 };
 
-// Инициализация
 load();
 applyTheme(localStorage.getItem(THEME_KEY) || 'light');
 updateClock();
